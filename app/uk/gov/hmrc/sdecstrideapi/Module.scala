@@ -30,18 +30,19 @@ class Module extends AppModule:
     configuration: Configuration
   ): Seq[Binding[_]] =
 
-    val useSimulator =
-      configuration.getOptional[Boolean]("govOne.useSimulator").getOrElse(false)
+    val useLocalConfig =
+      configuration.getOptional[Boolean]("auth.useLocalConfig").getOrElse(false)
 
     val configPrefix =
-      if useSimulator then "govOneSimulator" else "govOne"
+      if useLocalConfig then "azureAdLocal" else "azureAd"
 
-    val issuer   = configuration.get[String](s"$configPrefix.issuer")
-    val audience = configuration.get[String](s"$configPrefix.audience")
-    val jwksUrl  = new URL(configuration.get[String](s"$configPrefix.jwksUrl"))
+    val issuer         = configuration.get[String](s"$configPrefix.issuer")
+    val audience       = configuration.get[String](s"$configPrefix.audience")
+    val jwksUrl        = new URL(configuration.get[String](s"$configPrefix.jwksUrl"))
+    val validateIssuer = configuration.get[Boolean](s"$configPrefix.validateIssuer")
 
     bind[Clock].toInstance(Clock.systemDefaultZone) ::
       bind[TokenValidator].toInstance(
-        new JwtValidator(issuer, audience, jwksUrl)
+        new JwtValidator(issuer, audience, jwksUrl, validateIssuer)
       ) ::
       Nil

@@ -25,10 +25,18 @@ import java.util.Set
 import scala.util.Try
 
 final class JwtValidator(
-  issuer:   String,
-  audience: String,
-  jwksUrl:  URL
+  issuer:         String,
+  audience:       String,
+  jwksUrl:        URL,
+  validateIssuer: Boolean
 ) extends TokenValidator {
+
+  private val expectedClaims =
+    val builder = new JWTClaimsSet.Builder()
+
+    if validateIssuer then builder.issuer(issuer)
+
+    builder.build()
 
   private val keySelector =
     JWSAlgorithmFamilyJWSKeySelector
@@ -40,9 +48,7 @@ final class JwtValidator(
   private val claimsVerifier =
     new DefaultJWTClaimsVerifier[SecurityContext](
       audience,
-      new JWTClaimsSet.Builder()
-        .issuer(issuer)
-        .build(),
+      expectedClaims,
       Set.of("exp")
     )
 
