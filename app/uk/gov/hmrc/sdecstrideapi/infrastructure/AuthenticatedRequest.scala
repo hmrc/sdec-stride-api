@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.sdecstrideapi.controllers
+package uk.gov.hmrc.sdecstrideapi.infrastructure
 
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.wordspec.AnyWordSpec
-import play.api.http.Status
-import play.api.test.Helpers.*
-import play.api.test.{FakeRequest, Helpers}
+import com.nimbusds.jwt.JWTClaimsSet
+import play.api.mvc.*
 
-class MicroserviceHelloWorldControllerSpec extends AnyWordSpec with Matchers:
-
-  private val fakeRequest = FakeRequest("GET", "/")
-  private val controller  = new MicroserviceHelloWorldController(Helpers.stubControllerComponents())
-
-  "GET /" should:
-    "return 200" in:
-      val result = controller.hello()(fakeRequest)
-      status(result) shouldBe Status.OK
+class AuthenticatedRequest[A](
+  val claims: JWTClaimsSet,
+  request:    Request[A]
+) extends WrappedRequest[A](request)
