@@ -18,7 +18,9 @@ package uk.gov.hmrc.sdecstrideapi
 
 import play.api.inject.{Binding, Module as AppModule}
 import play.api.{Configuration, Environment}
+import uk.gov.hmrc.sdecstrideapi.infrastructure.{JwtValidator, TokenValidator}
 
+import java.net.URL
 import java.time.Clock
 
 class Module extends AppModule:
@@ -27,5 +29,14 @@ class Module extends AppModule:
     environment:   Environment,
     configuration: Configuration
   ): Seq[Binding[_]] =
-    bind[Clock].toInstance(Clock.systemDefaultZone) :: // inject if current time needs to be controlled in unit tests
+
+    val issuer         = configuration.get[String]("azureAdLocal.issuer")
+    val audience       = configuration.get[String]("azureAdLocal.audience")
+    val jwksUrl        = new URL(configuration.get[String]("azureAdLocal.jwksUrl"))
+    val validateIssuer = configuration.get[String]("azureAdLocal.validateIssuer").toBoolean
+
+    bind[Clock].toInstance(Clock.systemDefaultZone) ::
+      bind[TokenValidator].toInstance(
+        new JwtValidator(issuer, audience, jwksUrl, validateIssuer)
+      ) ::
       Nil

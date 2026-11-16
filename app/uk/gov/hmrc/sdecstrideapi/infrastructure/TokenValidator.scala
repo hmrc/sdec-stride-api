@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.sdecstrideapi.controllers
+package uk.gov.hmrc.sdecstrideapi.infrastructure
 
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import com.nimbusds.jwt.JWTClaimsSet
 
-import javax.inject.{Inject, Singleton}
+import scala.util.Try
 
-@Singleton()
-class MicroserviceHelloWorldController @Inject() (
-  cc: ControllerComponents
-) extends BackendController(cc):
-
-  val hello: Action[AnyContent] =
-    Action:
-      implicit request => Ok("Hello world")
+trait TokenValidator:
+  def validate(token: String): Try[JWTClaimsSet]

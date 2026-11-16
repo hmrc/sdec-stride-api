@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.sdecstrideapi
 
+import com.nimbusds.jwt.JWTClaimsSet
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -25,8 +26,11 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, StringContextOps}
+import uk.gov.hmrc.sdecstrideapi.infrastructure.TokenValidator
 
+import java.time.Clock
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Try}
 
 class HealthEndpointIntegrationSpec
     extends AnyWordSpec
@@ -40,6 +44,18 @@ class HealthEndpointIntegrationSpec
 
   override def fakeApplication(): Application =
     GuiceApplicationBuilder()
+      .disable[uk.gov.hmrc.sdecstrideapi.Module]
+      .overrides(
+        play.api.inject.bind[Clock].toInstance(Clock.systemDefaultZone()),
+        play.api.inject
+          .bind[TokenValidator]
+          .toInstance(
+            new TokenValidator {
+              override def validate(token: String): Try[JWTClaimsSet] =
+                Failure(new RuntimeException("Token validation is not configured in this test"))
+            }
+          )
+      )
       .build()
 
   "service health endpoint" should:
