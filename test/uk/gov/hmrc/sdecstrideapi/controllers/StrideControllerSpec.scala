@@ -31,7 +31,7 @@ import uk.gov.hmrc.sdecstrideapi.infrastructure.TokenValidator
 import java.time.Clock
 import scala.util.{Failure, Success, Try}
 
-class StrideControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll:
+class StrideControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite with BeforeAndAfterAll {
 
   private val testClaims =
     new JWTClaimsSet.Builder()
@@ -62,19 +62,24 @@ class StrideControllerSpec extends AnyWordSpec with Matchers with GuiceOneAppPer
   private def requestWithoutToken =
     FakeRequest("GET", "/customer")
 
-  "GET /customer" should:
-    "return 200 when a valid JWT token is supplied" in:
+  "GET /customer" should {
+    "return 200 when a valid JWT token is supplied" in {
       val result = controller.getStrideUser(requestWithToken("valid-token"))
 
       status(result)          shouldBe Status.OK
       contentAsString(result) shouldBe "Hello customer"
+    }
 
-    "return 401 when the Authorization header is missing" in:
+    "return 401 when the Authorization header is missing" in {
       val result = controller.getStrideUser(requestWithoutToken)
 
       status(result) shouldBe Status.UNAUTHORIZED
+    }
 
-    "return 401 when the token is invalid" in:
+    "return 401 when the token is invalid" in {
       val result = controller.getStrideUser(requestWithToken("invalid-token"))
 
       status(result) shouldBe Status.UNAUTHORIZED
+    }
+  }
+}

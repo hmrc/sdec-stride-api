@@ -18,9 +18,22 @@ package uk.gov.hmrc.sdecstrideapi.config
 
 import play.api.Configuration
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject() (config: Configuration):
 
   val appName: String = config.get[String]("appName")
+
+  val azureAdIssuer: String =
+    config.get[String]("azureAdLocal.issuer")
+
+  val azureAdAudience: String =
+    config.get[String]("azureAdLocal.audience")
+
+  val azureAdJwksUrl: URL =
+    new URL(config.get[String]("azureAdLocal.jwksUrl"))
+
+  val azureAdValidateIssuer: Boolean =
+    config.get[String]("azureAdLocal.validateIssuer").toBoolean

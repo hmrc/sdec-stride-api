@@ -58,8 +58,8 @@ class HealthEndpointIntegrationSpec
       )
       .build()
 
-  "service health endpoint" should:
-    "respond with 200 status" in:
+  "service health endpoint" should {
+    "respond with 200 status" in {
       val response =
         httpClient
           .get(url"$baseUrl/ping/ping")(HeaderCarrier())
@@ -67,3 +67,5 @@ class HealthEndpointIntegrationSpec
           .futureValue
 
       response.status shouldBe 200
+    }
+  }

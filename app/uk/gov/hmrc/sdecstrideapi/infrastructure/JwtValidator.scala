@@ -19,35 +19,32 @@ package uk.gov.hmrc.sdecstrideapi.infrastructure
 import com.nimbusds.jose.proc.*
 import com.nimbusds.jwt.*
 import com.nimbusds.jwt.proc.*
+import uk.gov.hmrc.sdecstrideapi.config.AppConfig
 
-import java.net.URL
 import java.util.Set
 import scala.util.Try
 
 final class JwtValidator(
-  issuer:         String,
-  audience:       String,
-  jwksUrl:        URL,
-  validateIssuer: Boolean
+  appConfig: AppConfig
 ) extends TokenValidator {
 
   private val expectedClaims =
     val builder = new JWTClaimsSet.Builder()
 
-    if validateIssuer then builder.issuer(issuer)
+    if appConfig.azureAdValidateIssuer then builder.issuer(appConfig.azureAdIssuer)
 
     builder.build()
 
   private val keySelector =
     JWSAlgorithmFamilyJWSKeySelector
-      .fromJWKSetURL[SecurityContext](jwksUrl)
+      .fromJWKSetURL[SecurityContext](appConfig.azureAdJwksUrl)
 
   private val processor =
     new DefaultJWTProcessor[SecurityContext]()
 
   private val claimsVerifier =
     new DefaultJWTClaimsVerifier[SecurityContext](
-      audience,
+      appConfig.azureAdAudience,
       expectedClaims,
       Set.of("exp")
     )
