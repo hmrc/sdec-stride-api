@@ -23,7 +23,7 @@ lazy val microservice = Project("sdec-stride-api", file("."))
       "uk.gov.hmrc.hmrcfrontend.views.config._",
       "controllers.routes._"
     ),
-    PlayKeys.playDefaultPort := 5503,
+    PlayKeys.playDefaultPort := 4010,
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     scalacOptions += "-Wconf:src=routes/.*:s",
     scalacOptions += "-Wconf:msg=unused import&src=html/.*:s",
