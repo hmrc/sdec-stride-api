@@ -17,10 +17,10 @@
 package uk.gov.hmrc.sdecstrideapi.infrastructure
 
 import com.nimbusds.jwt.JWTClaimsSet
-import jakarta.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.*
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

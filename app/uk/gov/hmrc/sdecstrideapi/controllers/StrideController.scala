@@ -27,9 +27,11 @@ import scala.concurrent.Future
 class StrideController @Inject() (
   cc:         ControllerComponents,
   authAction: AuthenticatedActionBuilder
-) extends BackendController(cc):
+) extends BackendController(cc) {
 
   def getStrideUser: Action[AnyContent] =
     authAction.async { _ =>
       Future.successful(Ok(s"Hello customer"))
     }
+
+}

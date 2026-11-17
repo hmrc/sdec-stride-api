@@ -37,7 +37,7 @@ class HealthEndpointIntegrationSpec
     with Matchers
     with ScalaFutures
     with IntegrationPatience
-    with GuiceOneServerPerSuite:
+    with GuiceOneServerPerSuite {
 
   private val httpClient = app.injector.instanceOf[HttpClientV2]
   private val baseUrl    = s"http://localhost:$port"
@@ -69,3 +69,5 @@ class HealthEndpointIntegrationSpec
       response.status shouldBe 200
     }
   }
+
+}
