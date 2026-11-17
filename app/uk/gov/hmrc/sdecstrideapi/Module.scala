@@ -22,7 +22,7 @@ import uk.gov.hmrc.sdecstrideapi.infrastructure.{JwtValidator, TokenValidator}
 
 import java.time.Clock
 
-class Module extends AppModule:
+class Module extends AppModule {
 
   override def bindings(
     environment:   Environment,
@@ -32,3 +32,5 @@ class Module extends AppModule:
     bind[Clock].toInstance(Clock.systemDefaultZone) ::
       bind[TokenValidator].to[JwtValidator] ::
       Nil
+
+}

@@ -22,9 +22,10 @@ import com.nimbusds.jwt.proc.*
 import uk.gov.hmrc.sdecstrideapi.config.AppConfig
 
 import java.util.Set
+import javax.inject.Inject
 import scala.util.Try
 
-final class JwtValidator(
+final class JwtValidator @Inject() (
   appConfig: AppConfig
 ) extends TokenValidator {
 
