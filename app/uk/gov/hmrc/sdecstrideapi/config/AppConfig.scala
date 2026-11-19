@@ -18,24 +18,28 @@ package uk.gov.hmrc.sdecstrideapi.config
 
 import play.api.Configuration
 
-import java.net.URL
+import java.net.URI
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject() (config: Configuration) {
 
-  val appName: String = config.get[String]("appName")
+  lazy val appName: String = config.get[String]("appName")
 
-  val azureAdIssuer: String =
-    config.get[String]("azureAdLocal.issuer")
+  private lazy val isLocal: Boolean = config.getOptional[Boolean]("govOne.useLocal").getOrElse(false)
 
-  val azureAdAudience: String =
-    config.get[String]("azureAdLocal.audience")
-
-  val azureAdJwksUrl: URL =
-    new URL(config.get[String]("azureAdLocal.jwksUrl"))
-
-  val azureAdValidateIssuer: Boolean =
-    config.get[String]("azureAdLocal.validateIssuer").toBoolean
+  lazy val jwtConfig: GovOneJwtConfig = if isLocal then {
+    GovOneJwtConfig(
+      config.get[String]("local.issuer"),
+      config.get[String]("local.audience"),
+      URI.create(config.get[String]("local.jwksUrl")).toURL
+    )
+  } else {
+    GovOneJwtConfig(
+      config.get[String]("remote.issuer"),
+      config.get[String]("remote.audience"),
+      URI.create(config.get[String]("remote.jwksUrl")).toURL
+    )
+  }
 
 }

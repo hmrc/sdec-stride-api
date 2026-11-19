@@ -29,30 +29,28 @@ final class JwtValidator @Inject() (
   appConfig: AppConfig
 ) extends TokenValidator {
 
-  private val expectedClaims =
+  private lazy val expectedClaims =
     val builder = new JWTClaimsSet.Builder()
-
-    if appConfig.azureAdValidateIssuer then builder.issuer(appConfig.azureAdIssuer)
-
+    builder.issuer(appConfig.jwtConfig.issuer)
     builder.build()
 
-  private val keySelector =
+  private lazy val keySelector =
     JWSAlgorithmFamilyJWSKeySelector
-      .fromJWKSetURL[SecurityContext](appConfig.azureAdJwksUrl)
+      .fromJWKSetURL[SecurityContext](appConfig.jwtConfig.jwksUrl)
 
-  private val processor =
+  private lazy val processor =
     new DefaultJWTProcessor[SecurityContext]()
 
-  private val claimsVerifier =
+  private lazy val claimsVerifier =
     new DefaultJWTClaimsVerifier[SecurityContext](
-      appConfig.azureAdAudience,
+      appConfig.jwtConfig.audience,
       expectedClaims,
       Set.of("exp")
     )
 
-  processor.setJWSKeySelector(keySelector)
-  processor.setJWTClaimsSetVerifier(claimsVerifier)
-
-  def validate(token: String): Try[JWTClaimsSet] =
+  def validate(token: String): Try[JWTClaimsSet] = {
+    processor.setJWSKeySelector(keySelector)
+    processor.setJWTClaimsSetVerifier(claimsVerifier)
     Try(processor.process(token, new SecurityContext {}))
+  }
 }
